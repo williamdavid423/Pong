@@ -127,15 +127,7 @@ namespace Racquet_Ball
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
-            if (playerturn == 1)
-            {
-                Rectangle player1Rec = new Rectangle(paddle1X, paddle1Y, paddleWidth, paddleHeight);
-
-            }
-            else if (playerturn == 2)
-            {
-                Rectangle player2Rec = new Rectangle(paddle2X, paddle2Y, paddleWidth, paddleHeight);
-            }
+       
 
             //move ball 
             ballX += ballXSpeed;
