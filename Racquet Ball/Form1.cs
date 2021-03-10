@@ -12,6 +12,7 @@ namespace Racquet_Ball
 {
     public partial class Form1 : Form
     {
+        int playerturn = 1;
         int paddle1X = 10;
         int paddle1Y = 100;
         int player1Score = 0;
@@ -45,6 +46,7 @@ namespace Racquet_Ball
 
         SolidBrush blueBrush = new SolidBrush(Color.DodgerBlue);
         SolidBrush whiteBrush = new SolidBrush(Color.White);
+        Pen WhiteHighlight = new Pen(Color.White);
         public Form1()
         {
             InitializeComponent();
@@ -125,6 +127,16 @@ namespace Racquet_Ball
 
         private void GameTimer_Tick(object sender, EventArgs e)
         {
+            if (playerturn == 1)
+            {
+                Rectangle player1Rec = new Rectangle(paddle1X, paddle1Y, paddleWidth, paddleHeight);
+
+            }
+            else if (playerturn == 2)
+            {
+                Rectangle player2Rec = new Rectangle(paddle2X, paddle2Y, paddleWidth, paddleHeight);
+            }
+
             //move ball 
             ballX += ballXSpeed;
             ballY += ballYSpeed;
@@ -164,11 +176,11 @@ namespace Racquet_Ball
             //move player 2 on x axis
             if (leftArrowDown == true && paddle2X > 0)
             {
-                paddle2X += paddleSpeed;
+                paddle2X -= paddleSpeed;
             }
             if (rightArrowDown == true && paddle2X < this.Width)
             {
-                paddle2X -= paddleSpeed;
+                paddle2X += paddleSpeed;
             }
 
             //check if ball hit top or bottom wall and change direction if it does 
@@ -178,50 +190,58 @@ namespace Racquet_Ball
             }
 
             //create Rectangles of objects on screen to be used for collision detection 
-            Rectangle player1Rec = new Rectangle(paddle1X, paddle1Y, paddleWidth, paddleHeight);
-            Rectangle player2Rec = new Rectangle(paddle2X, paddle2Y, paddleWidth, paddleHeight);
+            ////Rectangle player1Rec = new Rectangle(paddle1X, paddle1Y, paddleWidth, paddleHeight);
+            ////Rectangle player2Rec = new Rectangle(paddle2X, paddle2Y, paddleWidth, paddleHeight);
             Rectangle ballRec = new Rectangle(ballX, ballY, ballWidth, ballHeight);
+            if (playerturn == 1)
+            {
+                Rectangle player1Rec = new Rectangle(paddle1X, paddle1Y, paddleWidth, paddleHeight);
+                if (player1Rec.IntersectsWith(ballRec))
+                {
+                    playerturn++;
+                    ballXSpeed *= -1;
+                    ballX = paddle1X + paddleWidth + 1;
+                }
+            }
+            else if (playerturn == 2)
+            {
+                Rectangle player2Rec = new Rectangle(paddle2X, paddle2Y, paddleWidth, paddleHeight);
+                  if (player2Rec.IntersectsWith(ballRec))
+                {
+                    playerturn--;
+                    ballXSpeed *= -1;
+                    ballX = paddle2X - ballWidth - 1;
+                }
+
+            }
+
 
             //check if ball hits either paddle. If it does change the direction 
             //and place the ball in front of the paddle hit 
-            if (player1Rec.IntersectsWith(ballRec))
-            {
-                ballXSpeed *= -1;
-                ballX = paddle1X + paddleWidth + 1;
-            }
-            else if (player2Rec.IntersectsWith(ballRec))
-            {
-                ballXSpeed *= -1;
-                ballX = paddle2X - ballWidth - 1;
-            }
+
 
             //check if a player missed the ball and if true add 1 to score of other player  
-            if (ballX < 0)
-            {
-                player2Score++;
-
-                p2ScoreLabel.Text = $"{player2Score}";
-
-
-
-                ballX = 295;
-                ballY = 195;
-
-                paddle1Y = 170;
-                paddle2Y = 170;
-            }
-            else if (ballX > 600)
+            if (playerturn == 2 && ballX < 0)
             {
                 player1Score++;
 
+                ballX = 295;
+                ballY = 195;
+
                 p1ScoreLabel.Text = $"{player1Score}";
+
+                
+            }
+            else if (playerturn == 1 && ballX < 0)
+            {
+                player2Score++;
 
                 ballX = 295;
                 ballY = 195;
 
-                paddle1Y = 170;
-                paddle2Y = 170;
+                p2ScoreLabel.Text = $"{player2Score}";
             }
+
 
             // check score and stop game if either player is at 3 
             if (player1Score == 3 || player2Score == 3)
@@ -229,6 +249,11 @@ namespace Racquet_Ball
                 gameTimer.Enabled = false;
             }
 
+            if(ballX > 600)
+            {
+                ballXSpeed *= -1;
+                ballX = ballX - ballWidth + 1;
+            }
 
             Refresh();
         }
@@ -240,6 +265,14 @@ namespace Racquet_Ball
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            if(playerturn == 1)
+            {
+                e.Graphics.DrawRectangle(WhiteHighlight, paddle1X, paddle1Y, paddleWidth, paddleHeight);
+            }
+            else if(playerturn == 2)
+            {
+                e.Graphics.DrawRectangle(WhiteHighlight, paddle2X, paddle2Y, paddleWidth, paddleHeight);
+            }
             e.Graphics.FillRectangle(whiteBrush, ballX, ballY, ballWidth, ballHeight);
 
             e.Graphics.FillRectangle(blueBrush, paddle1X, paddle1Y, paddleWidth, paddleHeight);
