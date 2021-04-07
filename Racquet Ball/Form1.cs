@@ -158,7 +158,6 @@ namespace Racquet_Ball
             {
                 paddle2Y -= paddleSpeed;
             }
-
             if (downArrowDown == true && paddle2Y < this.Height - paddleHeight)
             {
                 paddle2Y += paddleSpeed;
